@@ -56,12 +56,6 @@ export default function Page({ params }: PageProps) {
   const isFavorite = (idMeal: string) =>
     favorites.some((f) => f.idMeal === idMeal);
 
-<<<<<<< HEAD
-    return (
-      <>
-      <div className="flex flex-col items-center justify-start p-5 md:p-10 w-full min-h-screen bg-base-100"><BackButton />
-        <h1 className="text-4xl md:text-6xl text-secondary mb-10 capitalize">
-=======
   const getMealType = (mealName: string) => {
     const lowerName = mealName.toLowerCase();
     if (
@@ -90,7 +84,6 @@ export default function Page({ params }: PageProps) {
         <BackButton />
 
         <h1 className="text-4xl md:text-6xl text-secondary mb-5 capitalize">
->>>>>>> 407b9d8 (Added dietary filter (All/Veg/Non-Veg) with button UI)
           {params.category} 🍽
         </h1>
 
