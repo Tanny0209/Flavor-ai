@@ -195,6 +195,20 @@ export default function Page() {
             </div>
 
             {/* Grid layout for categories */}
+            {filter === "Vegetarian" && (
+              <div className="w-full max-w-7xl mb-6 mx-auto text-center">
+                <h2 className="text-xl font-semibold mb-3 text-gray-800">Explore Veg Subcategories:</h2>
+                <div className="flex flex-wrap justify-center gap-4">
+                  {["Dessert", "Pasta", "Starter", "Vegan"].map((item) => (
+                    <Link key={item} href={`/category/${item}`}>
+                      <button className="btn btn-primary text-sm md:text-base">
+                        {item}
+                      </button>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-7xl">
               {categories
                 .filter((category) => {
