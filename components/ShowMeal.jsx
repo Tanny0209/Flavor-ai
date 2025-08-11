@@ -75,6 +75,32 @@ function IngredientsTable({ mealData }) {
 // --- The Main Page Component ---
 function ShowMeal({ URL }) {
   const [mealData, setMealData] = useState(null);
+  // Store favorites from localStorage
+  const [favorites, setFavorites] = useState([]);
+
+  // Load favorites on mount
+  useEffect(() => {
+    const storedFavorites = localStorage.getItem("favorites");
+    if (storedFavorites) {
+      setFavorites(JSON.parse(storedFavorites));
+    }
+  }, []);
+
+  // Toggle favorite for a meal
+  const toggleFavorite = (meal) => {
+    let updatedFavorites = [];
+    if (favorites.some((f) => f.idMeal === meal.idMeal)) {
+      updatedFavorites = favorites.filter((f) => f.idMeal !== meal.idMeal);
+    } else {
+      updatedFavorites = [...favorites, meal];
+    }
+    setFavorites(updatedFavorites);
+    localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
+  };
+
+  // Check if a meal is already in favorites
+  const isFavorite = (idMeal) => favorites.some((f) => f.idMeal === idMeal);
+
   const [playerState, setPlayerState] = useState("idle");
   const [activeWordRange, setActiveWordRange] = useState({
     sentenceIndex: -1,
@@ -188,10 +214,23 @@ function ShowMeal({ URL }) {
         <BackButton />
         <div className="relative max-w-4xl w-full bg-base-200 shadow-xl rounded-xl">
           <div className="p-6 md:p-12">
-            <header className="text-center mb-8">
+            <header className="relative text-center mb-8">
+              <button
+                onClick={() => toggleFavorite({
+                  idMeal: mealData.idMeal,
+                  strMeal: mealData.strMeal,
+                  strMealThumb: mealData.strMealThumb
+                })}
+                className="absolute top-0 right-0 bg-black text-white rounded-full p-2 text-lg hover:bg-black hover:text-black transition"
+                aria-label="Toggle favorite"
+              >
+                {isFavorite(mealData.idMeal) ? "💖" : "🤍"}
+              </button>
+              {/* Title */}
               <h1 className="text-3xl md:text-5xl font-bold text-base-content">
                 {mealData.strMeal}
               </h1>
+              {/* Cuisine */}
               <p className="text-lg text-primary mt-2">
                 {mealData.strArea} Cuisine
               </p>
