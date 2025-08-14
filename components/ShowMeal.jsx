@@ -6,6 +6,7 @@ import { PlayIcon, PauseIcon, ArrowPathIcon } from '@heroicons/react/24/solid';
 import Link from "next/link";
 import { useEffect, useState, useMemo, useRef, useCallback } from "react";
 import Footer from "./Footer";
+import Navbar from "./Navbar";
 
 // --- Self-contained helper components ---
 
@@ -118,6 +119,21 @@ function ShowMeal({ URL }) {
       .filter(Boolean);
   }, [mealData]);
 
+const allergenKeywords = [
+  "milk", "cheese", "butter", "cream", "egg", "peanut", "almond", "cashew", "walnut", "pecan", "hazelnut", "wheat", "barley", "rye", "soy", "soybean", "shrimp", "prawn", "crab", "lobster", "clam", "mussel", "oyster", "fish"
+];
+
+const detectedAllergens = useMemo(() => {
+  if (!mealData) return [];
+  const ingredients = Object.keys(mealData)
+    .filter(k => k.startsWith("strIngredient") && mealData[k])
+    .map(k => mealData[k].toLowerCase());
+
+  return allergenKeywords.filter(allergen =>
+    ingredients.some(ing => ing.includes(allergen))
+  );
+}, [mealData]);
+
   useEffect(() => {
     const synth = window.speechSynthesis;
     synth.cancel();
@@ -181,36 +197,40 @@ function ShowMeal({ URL }) {
 
   if (!mealData) {
     return (
-      <div className="min-h-screen flex bg-base-100 justify-center items-center p-4">
-        <div className="max-w-4xl w-full p-12 my-6 skeleton bg-base-200 rounded-xl shadow-md">
-          <div className="animate-pulse">
-            <div className="h-10 bg-base-300 rounded-md w-60 mx-auto mb-4"></div>
-            <div className="h-6 bg-base-300 rounded-md w-40 mx-auto mb-10"></div>
-            <div className="flex flex-col md:flex-row gap-12">
-              <div className="md:w-1/2">
-                <div className="h-80 bg-base-300 rounded-lg"></div>
+      <>
+        <Navbar />
+        <div className="min-h-screen mt-20 flex bg-base-100 justify-center items-center p-4">
+          <div className="max-w-4xl w-full p-12 my-6 skeleton bg-base-200 rounded-xl shadow-md">
+            <div className="animate-pulse">
+              <div className="h-10 bg-base-300 rounded-md w-60 mx-auto mb-4"></div>
+              <div className="h-6 bg-base-300 rounded-md w-40 mx-auto mb-10"></div>
+              <div className="flex flex-col md:flex-row gap-12">
+                <div className="md:w-1/2">
+                  <div className="h-80 bg-base-300 rounded-lg"></div>
+                </div>
+                <div className="md:w-1/2 space-y-4">
+                  <div className="h-8 bg-base-300 rounded-md w-40"></div>
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <div key={i} className="h-8 bg-base-300 rounded-md"></div>
+                  ))}
+                </div>
               </div>
-              <div className="md:w-1/2 space-y-4">
-                <div className="h-8 bg-base-300 rounded-md w-40"></div>
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <div key={i} className="h-8 bg-base-300 rounded-md"></div>
-                ))}
-              </div>
+              <div className="h-8 bg-base-300 rounded-md w-40 mt-6"></div>
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="h-10 bg-base-300 my-2 rounded-md"></div>
+              ))}
             </div>
-            <div className="h-8 bg-base-300 rounded-md w-40 mt-6"></div>
-            {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="h-10 bg-base-300 my-2 rounded-md"></div>
-            ))}
           </div>
         </div>
-      </div>
+      </>
     );
   }
 
   return (
     <>
+      <Navbar />
       {/* THIS IS THE LINE THAT WAS CHANGED --- */}
-      <div className="min-h-screen py-10 px-4 bg-base-100 flex justify-center items-start">
+      <div className="min-h-screen py-10 px-4 mt-20 bg-base-100 flex justify-center items-start">
         <BackButton />
         <div className="relative max-w-4xl w-full bg-base-200 shadow-xl rounded-xl">
           <div className="p-6 md:p-12">
@@ -234,6 +254,15 @@ function ShowMeal({ URL }) {
               <p className="text-lg text-primary mt-2">
                 {mealData.strArea} Cuisine
               </p>
+              {detectedAllergens.length > 0 && (
+                <div className="flex flex-wrap justify-center gap-2 mt-2">
+                  {detectedAllergens.map((allergen) => (
+                    <span key={allergen} className="badge badge-sm badge-error text-white">
+                      {allergen}
+                    </span>
+                  ))}
+                </div>
+              )}
             </header>
             <div className="flex flex-col md:flex-row gap-8 md:gap-12 mb-12">
               <div className="md:w-1/2">
